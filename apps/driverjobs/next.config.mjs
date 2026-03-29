@@ -8,7 +8,8 @@ const __dirname = dirname(__filename);
 
 const nextConfig = withApp({
   appDir: __dirname,
-  enableApiRewrite: true, // Enable rewrites to proxy API calls and avoid CORS
+  // Browser calls NEXT_PUBLIC_API_BASE_URL directly; no same-origin /api/v1 proxy
+  enableApiRewrite: false,
   customConfig: {
     env: {
       NEXT_PUBLIC_DRIVERJOBS_URL: process.env.NEXT_PUBLIC_DRIVERJOBS_URL,

@@ -4,7 +4,7 @@ import { createBaseConfig, getApiBaseUrl } from './base.js';
  * Creates a Next.js config for a specific app with shared base configuration
  * @param {Object} options - App-specific configuration options
  * @param {string} options.appDir - The app directory path
- * @param {boolean} options.enableApiRewrite - Whether to enable API rewrites (default: true)
+ * @param {boolean} options.enableApiRewrite - If true, rewrite /api/v1 to the backend (default: true). Use false when clients call NEXT_PUBLIC_API_BASE_URL directly.
  * @param {string} options.apiRewriteDestination - Custom API rewrite destination
  * @param {Object} options.customConfig - Additional Next.js config to merge
  */

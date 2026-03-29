@@ -14,7 +14,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 const nextConfig = withApp({
   appDir: __dirname,
-  enableApiRewrite: true, // Enable rewrites to proxy API calls and avoid CORS
+  // Browser calls NEXT_PUBLIC_API_BASE_URL directly; no same-origin /api/v1 proxy
+  enableApiRewrite: false,
   customConfig: {
     env: {
       NEXT_PUBLIC_AUTH_BASE_URL: process.env.NEXT_PUBLIC_AUTH_BASE_URL,

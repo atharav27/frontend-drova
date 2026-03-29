@@ -4,6 +4,7 @@
  */
 
 export interface EnvConfig {
+  /** Backend API origin only (no /api/v1). Set in Docker build args and local .env.local. */
   NEXT_PUBLIC_API_BASE_URL?: string;
   NEXT_PUBLIC_AUTH_BASE_URL?: string;
   NEXT_PUBLIC_MARKETPLACE_URL?: string;

@@ -41,6 +41,12 @@ function getApiBaseUrl() {
     }
     return baseUrl;
 }
+function normalizeApiBase(base) {
+    return base.replace(/\/+$/, '');
+}
+function normalizeEndpoint(endpoint) {
+    return endpoint.replace(/^\/+/, '');
+}
 /**
  * API configuration with environment-aware settings
  */
@@ -57,21 +63,15 @@ exports.apiConfig = {
     },
     // API version
     version: 'v1',
-    // Get full API URL
+    // Full API URL: browser and server call the backend origin directly (withCredentials in apiFetch).
+    // CORS and cookie rules (e.g. SameSite) must be configured on the backend.
     getApiUrl: (endpoint) => {
         const base = getApiBaseUrl();
-        // In the browser (client-side), use relative paths to go through Next.js rewrites
-        // This avoids CORS issues and allows Next.js to proxy requests to the backend
-        if (typeof window !== 'undefined') {
-            // Client-side: use relative path so Next.js rewrites can proxy it
-            return `/api/v1/${endpoint}`;
-        }
-        // Server-side (SSR, API routes, build time): use full backend URL if available
-        // This is required for proper cookie handling with Set-Cookie headers
+        const path = normalizeEndpoint(endpoint);
         if (/^https?:\/\//i.test(base)) {
-            return `${base}/api/v1/${endpoint}`;
+            return `${normalizeApiBase(base)}/api/v1/${path}`;
         }
-        // Fallback to relative path if no base URL (shouldn't happen in production)
-        return `/api/v1/${endpoint}`;
+        // No absolute base (e.g. empty client embed or misconfiguration): same-origin path only
+        return `/api/v1/${path}`;
     },
 };

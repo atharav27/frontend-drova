@@ -12,7 +12,8 @@ COPY . .
 FROM base AS builder
 ARG DEPLOY_APP
 ENV DEPLOY_APP=${DEPLOY_APP}
-# Environment variables needed for build time (client inlining)
+# Environment variables needed for build time (client inlining).
+# NEXT_PUBLIC_API_BASE_URL: backend origin only (e.g. https://backend-drova.onrender.com), no /api/v1 suffix.
 ARG NEXT_PUBLIC_API_BASE_URL
 ARG NEXT_PUBLIC_AUTH_BASE_URL
 ARG NEXT_PUBLIC_MARKETPLACE_URL

@@ -8,8 +8,8 @@ const __dirname = dirname(__filename);
 
 const nextConfig = withApp({
   appDir: __dirname,
-  // Enable rewrites so the auth app can proxy /api/v1/* to the backend and avoid CORS in the browser
-  enableApiRewrite: true,
+  // Browser calls NEXT_PUBLIC_API_BASE_URL directly; no same-origin /api/v1 proxy
+  enableApiRewrite: false,
   customConfig: {
     // Produce a minimal server bundle for slimmer Docker images
     output: 'standalone',
