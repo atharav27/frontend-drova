@@ -1,0 +1,26 @@
+{
+  "extends": "@repo/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "~/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "next.config.mjs",
+    "postcss.config.mjs",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/auth/signup/page.tsx",
+    "app/(auth)/sign-up",
+    "../../packages/ui/src/components/footer/Footer.tsx"
+  ],
+  "exclude": ["node_modules"]
+}

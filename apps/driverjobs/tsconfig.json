@@ -1,0 +1,34 @@
+{
+  "extends": "@repo/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "~/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "next.config.mjs",
+    "postcss.config.mjs",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../packages/ui/src/components/home/HeroSection.tsx",
+    "../../packages/ui/src/components/home/FeaturesSection.tsx",
+    "../../packages/ui/src/components/home/InsuranceQuoteForm.tsx",
+    "../../packages/ui/src/common/hooks/useLocalStorage.ts",
+    "../../packages/ui/src/common/hooks/useAuthRedirect.ts",
+    "../../packages/ui/src/components/profile/UserDetailsCard.tsx",
+    "../../packages/ui/src/components/form-fields.tsx",
+    "../../packages/ui/src/components/DatePicker.tsx",
+    "../../packages/ui/src/components/navbar/BottomNavbar.tsx",
+    "../../packages/ui/src/components/profile/ProfileSavedTab.tsx",
+    "../../packages/ui/src/components/common/ApplicationSubmitted.tsx"
+  ],
+  "exclude": ["node_modules"]
+}

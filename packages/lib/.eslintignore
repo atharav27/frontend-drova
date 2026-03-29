@@ -1,0 +1,12 @@
+# Ignore compiled TypeScript outputs
+*.js
+*.d.ts
+*.d.ts.map
+
+# Ignore node_modules
+node_modules/
+
+# Ignore dist/build directories if any
+dist/
+build/
+

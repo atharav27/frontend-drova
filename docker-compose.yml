@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  marketplace:
+    container_name: drova-marketplace
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: marketplace
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+
+  driverjobs:
+    container_name: drova-driverjobs
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: driverjobs
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
