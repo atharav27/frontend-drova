@@ -32,6 +32,11 @@ export function createBaseConfig(appDir) {
           port: "4566",
           pathname: "/**",
         },
+        {
+          protocol: "https",
+          hostname: "res.cloudinary.com",
+          pathname: "/**",
+        },
         // Add more common image patterns here
       ],
     },

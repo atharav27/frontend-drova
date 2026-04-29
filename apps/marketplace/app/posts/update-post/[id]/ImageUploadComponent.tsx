@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { X, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { UseFormSetValue } from 'react-hook-form';
-import { apiFetch } from '@repo/lib/apiFetch';
+import { useCloudinaryImageUpload } from '~/hooks/useCloudinaryImageUpload';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 5;
@@ -11,7 +11,7 @@ const MAX_FILE_SIZE_MB = 5;
 // Type that works with both PostFormData and UpdatePostFormData
 interface ImageUploadProps {
   imageUrls: string[];
-  setImageUrls: (urls: string[]) => void;
+  setImageUrls: React.Dispatch<React.SetStateAction<string[]>>;
   setValue: UseFormSetValue<any>; // Use any for more flexibility across form types
 }
 
@@ -20,54 +20,23 @@ export function ImageUploadComponent({
   setImageUrls,
   setValue
 }: ImageUploadProps) {
+  const { uploadImages, validateFile, isUploading } = useCloudinaryImageUpload({
+    maxFileSizeMB: MAX_FILE_SIZE_MB,
+    allowedTypes: ["image/jpeg", "image/png", "image/webp"],
+  });
 
   useEffect(() => {
     setValue("images", imageUrls); // Keep form in sync with uploaded images
   }, [imageUrls, setValue]);
-
-  const uploadImage = async (file: File): Promise<string | null> => {
-    const fileName = file.name;
-    const contentType = file.type;
-
-    try {
-      const res = await apiFetch("/file/get-presign", {
-        method: "POST",
-        body: JSON.stringify({
-          fileName,
-          storeType: "vehicle-posts",
-          contentType,
-        })
-      });
-
-      const presignedUrl = res?.data?.url;
-      if (!presignedUrl) throw new Error("No upload URL");
-
-      // For the actual file upload to S3, we still need to use fetch directly
-      // as we need to send the file data
-      await fetch(presignedUrl, {
-        method: 'PUT',
-        body: file,
-        headers: { "Content-Type": contentType },
-      });
-
-      return presignedUrl.split("?")[0]; // public URL
-    } catch (err) {
-      toast.error("Upload failed: " + file.name);
-      return null;
-    }
-  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     const validFiles = Array.from(files).filter((file) => {
-      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-        toast.error(`${file.name} is not a JPEG, PNG or WEBP.`);
-        return false;
-      }
-      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-        toast.error(`${file.name} exceeds ${MAX_FILE_SIZE_MB}MB.`);
+      const validationError = validateFile(file);
+      if (validationError) {
+        toast.error(validationError);
         return false;
       }
       return true;
@@ -83,15 +52,18 @@ export function ImageUploadComponent({
     // Show loading state
     toast.loading(`Uploading ${validFiles.length} image(s)...`);
 
-    const newUrls = (await Promise.all(validFiles.map(uploadImage))).filter(Boolean) as string[];
-    const updated = [...imageUrls, ...newUrls];
-    setImageUrls(updated);
-    setValue("images", updated);
-
-    // Clear loading state and show success
-    toast.dismiss();
-    if (newUrls.length > 0) {
+    try {
+      const newUrls = await uploadImages(validFiles);
+      const updated = [...imageUrls, ...newUrls];
+      setImageUrls(updated);
+      setValue("images", updated);
       toast.success(`Successfully uploaded ${newUrls.length} image(s)`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Image upload failed";
+      toast.error(message);
+    } finally {
+      // Clear loading state regardless of success/failure
+      toast.dismiss();
     }
 
     // Reset the input value so the same files can be selected again if needed
@@ -125,7 +97,7 @@ export function ImageUploadComponent({
           multiple
           className="sr-only"
           onChange={handleImageUpload}
-          disabled={imageUrls.length >= MAX_FILES}
+          disabled={imageUrls.length >= MAX_FILES || isUploading}
         />
       </label>
 
