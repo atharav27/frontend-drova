@@ -22,7 +22,12 @@ interface AuthDialogProps {
 
 export function AuthDialog({ isOpen, onClose, onSignIn, onRegister }: AuthDialogProps) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <AlertDialogContent
         className="fixed mx-auto top-[50%] z-50 w-[calc(100vw-32px)] sm:w-full  rounded-lg border-0 shadow-xl bg-white max-w-[92vw] sm:max-w-md md:max-w-lg lg:max-w-lg"
         style={{
