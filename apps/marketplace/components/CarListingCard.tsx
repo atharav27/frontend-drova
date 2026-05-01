@@ -35,15 +35,9 @@ const CarListingCard = ({
 }: CarListingCardProps) => {
   const router = useRouter();
   const isVerifiedSeller = true; // You can add logic to determine if seller is verified
-  const getListingImage = () => {
-    const firstImage = images?.[0];
-    if (!firstImage) return carImg.src;
-    if (firstImage.startsWith("http://") || firstImage.startsWith("https://")) return firstImage;
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (!baseUrl) return firstImage;
-    return `${baseUrl.replace(/\/$/, "")}/${firstImage.replace(/^\/+/, "")}`;
-  };
-  const listingImage = getListingImage();
+  const firstImage = images?.[0];
+  const listingImage =
+    (typeof firstImage === "string" ? firstImage : firstImage?.key) || carImg.src;
 
     // Compact variant
   if (variant === "compact") {

@@ -2,6 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@repo/lib/apiFetch";
 
 // API Response for vehicle posts list
+export interface VehicleImage {
+  id: string;
+  key: string;
+  vehiclePostId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
 export interface VehiclePost {
   id: string;
   vehicleName: string;
@@ -16,7 +25,7 @@ export interface VehiclePost {
   maxPower: number;
   description: string;
   features: string[];
-  images: string[];
+  images: VehicleImage[];
   contactName: string;
   contactNumber: string;
   yearOfManufacture: number;
