@@ -57,7 +57,15 @@ export const CarListingCardPost = ({
   setActiveTab
 }: CarListingCardProps) => {
   const router = useRouter();
-  const listingImage = images?.[0] || carImg.src;
+  const getListingImage = () => {
+    const firstImage = images?.[0];
+    if (!firstImage) return carImg.src;
+    if (firstImage.startsWith("http://") || firstImage.startsWith("https://")) return firstImage;
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (!baseUrl) return firstImage;
+    return `${baseUrl.replace(/\/$/, "")}/${firstImage.replace(/^\/+/, "")}`;
+  };
+  const listingImage = getListingImage();
 
   return (
     <Card className="w-full overflow-hidden border shadow-sm rounded-lg p-0">
