@@ -42,7 +42,7 @@ export default function PostSummaryCard({
   updatePostStatus,
   setActiveTab,
 }: PostSummaryCardProps) {
-  const { executeWithAuth, showAuthDialog, handleSignIn, handleRegister, closeDialog } = useLazyAuthAction();
+  const { executeWithAuth, showAuthDialog, setShowAuthDialog, handleSignIn, handleRegister, closeDialog } = useLazyAuthAction();
 
   // Check current authentication status
   const { status } = useAuthMe();
@@ -111,6 +111,11 @@ export default function PostSummaryCard({
     : 2;
 
   const handleContactSeller = () => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true);
+      return;
+    }
+
     executeWithAuth(() => {
       // User is authenticated, fetch contact details
       setShouldFetchContact(true);
