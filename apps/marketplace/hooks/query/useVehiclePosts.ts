@@ -35,6 +35,10 @@ export interface VehiclePost {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  /** Present on list/detail responses when seller info is embedded */
+  postedBy?: {
+    isVerified?: boolean;
+  };
 }
 
 interface VehiclePostResponse {

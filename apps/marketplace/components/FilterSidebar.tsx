@@ -22,10 +22,19 @@ type FilterSidebarProps = {
   onApply?: () => void;
 };
 
-const locations = ["Bangalore", "Mumbai", "Hyderabad", "Pune", "Delhi"];
+const MAX_PRICE = 2_000_000;
+
+const locations = [
+  "Bangalore",
+  "Mumbai",
+  "Hyderabad",
+  "Pune",
+  "Delhi",
+  "Chennai",
+  "Jaipur",
+];
 const fuelTypes = ["Any", "CNG", "Electric", "Diesel", "Petrol"];
-const conditions = ["Any", "Brand New", "Like New", "Good"];
-const sellerTypes = ["Any", "Individual", "Dealer", "Verified Sellers"];
+const sellerTypes = ["Any", "Verified Sellers"];
 
 const FilterComponent = ({
   handleChange,
@@ -68,8 +77,8 @@ const FilterComponent = ({
           className="mt-2"
           value={filters.price}
           onValueChange={(val) => handleChange("price", val)}
-          max={100000}
-          step={1000}
+          max={MAX_PRICE}
+          step={10000}
         />
         <div className="flex gap-2 mt-3 md:mt-4 lg:mt-6">
           <Input
@@ -137,34 +146,6 @@ const FilterComponent = ({
                 className="text-sm md:text-base lg:text-lg text-textdark/70 cursor-pointer"
               >
                 {fuelType}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Condition */}
-      <div className="mb-4 md:mb-5 lg:mb-6">
-        <div className="flex items-center justify-between mb-2 md:mb-3">
-          <label className="text-base md:text-lg lg:text-xl font-medium text-textdark">Condition</label>
-          <ChevronDown className="w-3 h-3 md:w-4 md:h-4 text-textdark" />
-        </div>
-        <div className="space-y-2 md:space-y-3">
-          {conditions.map((condition) => (
-            <div key={condition} className="flex items-center space-x-2">
-              <Checkbox
-                id={`condition-${condition}`}
-                checked={filters.condition.includes(condition)}
-                onCheckedChange={(checked) =>
-                  handleCheckboxChange("condition", condition, checked as boolean)
-                }
-                className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 border-textdark/20"
-              />
-              <label
-                htmlFor={`condition-${condition}`}
-                className="text-sm md:text-base lg:text-lg text-textdark/70 cursor-pointer"
-              >
-                {condition}
               </label>
             </div>
           ))}

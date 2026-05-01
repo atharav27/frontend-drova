@@ -14,7 +14,7 @@ import {
   DrawerContent,
   DrawerTrigger,
 } from "@repo/ui/components/ui/drawer"
-import { useVehiclePosts } from "~/hooks/query/useVehiclePosts";
+import { useVehiclePosts, type VehiclePost } from "~/hooks/query/useVehiclePosts";
 import { AuthDialog } from "@repo/ui/components/common/AuthDialog";
 import { useLazyAuthAction } from "~/hooks/useAuthAction";
 import { PageLoader } from "@repo/ui/components/common/UnifiedLoader";
@@ -29,6 +29,8 @@ type Filters = {
 };
 
 const ITEMS_PER_PAGE = 10;
+const MAX_PRICE = 2_000_000;
+
 export default function Page() {
   const [open, setOpen] = useState(false);
   const { showAuthDialog, handleSignIn, handleRegister, closeDialog, setShowAuthDialog } = useLazyAuthAction();
@@ -45,7 +47,7 @@ export default function Page() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [filters, setFilters] = useState<Filters>({
-    price: [0, 100000],
+    price: [0, MAX_PRICE],
     location: [],
     fuelType: [],
     condition: [],
@@ -53,6 +55,39 @@ export default function Page() {
   });
 
   const { data, isLoading, isError, error } = useVehiclePosts(currentPage, ITEMS_PER_PAGE);
+
+  const filteredItems = useMemo(() => {
+    const items: VehiclePost[] = data?.items ?? [];
+    const minPrice = filters.price[0] ?? 0;
+    const maxPrice = filters.price[1] ?? MAX_PRICE;
+
+    const isAny = (arr: string[]) => arr.length === 0 || arr.includes("Any");
+
+    return items.filter((car) => {
+      if (car.price < minPrice || car.price > maxPrice) return false;
+
+      if (!isAny(filters.location)) {
+        const matched = filters.location.some(
+          (loc) => loc.toLowerCase() === (car.location ?? "").toLowerCase()
+        );
+        if (!matched) return false;
+      }
+
+      if (!isAny(filters.fuelType)) {
+        const matched = filters.fuelType.some(
+          (f) => f.toLowerCase() === (car.fuelType ?? "").toLowerCase()
+        );
+        if (!matched) return false;
+      }
+
+      if (!isAny(filters.sellerType)) {
+        const wantsVerified = filters.sellerType.includes("Verified Sellers");
+        if (wantsVerified && !car.postedBy?.isVerified) return false;
+      }
+
+      return true;
+    });
+  }, [data?.items, filters]);
 
   useEffect(() => {
     if (data) {
@@ -68,7 +103,7 @@ export default function Page() {
 
   const clearFilters = () => {
     setFilters({
-      price: [0, 100000],
+      price: [0, MAX_PRICE],
       location: [],
       fuelType: [],
       condition: [],
@@ -78,7 +113,7 @@ export default function Page() {
 
   const removeFilter = (key: keyof Filters) => {
     if (key === "price") {
-      setFilters((prev) => ({ ...prev, [key]: [0, 100000] }));
+      setFilters((prev) => ({ ...prev, [key]: [0, MAX_PRICE] }));
     } else {
       setFilters((prev) => ({ ...prev, [key]: [] }));
     }
@@ -93,10 +128,7 @@ export default function Page() {
   };
 
   const handleApplyFilters = () => {
-    // Close mobile filter drawer
     setOpen(false);
-    // You can add additional filter application logic here
-    console.log("Applying filters:", filters);
   };
 
   const handleSearch = () => {
@@ -305,7 +337,7 @@ export default function Page() {
               </div>
 
               {/* Price Range Badge */}
-              {(filters.price[0] !== 0 || filters.price[1] !== 100000) && (
+              {(filters.price[0] !== 0 || filters.price[1] !== MAX_PRICE) && (
                 <Badge className="flex items-center gap-2 bg-[#F0F0F0] text-textdark px-3 py-1 text-sm md:text-base">
                   ₹{filters.price[0]} - ₹{filters.price[1]}
                   <Button variant="ghost" size="sm" className="p-0 hover:bg-[#F0F0F0]">
@@ -357,9 +389,9 @@ export default function Page() {
               {/* Default variant for mobile and desktop */}
               <div className="block sm:hidden md:block">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-                  {data?.items?.map((car, index) => (
+                  {filteredItems.map((car) => (
                     <CarListingCard
-                      key={`default-${index}`}
+                      key={car.id}
                       {...car}
                       userProfile={undefined}
                       variant="default"
@@ -371,9 +403,9 @@ export default function Page() {
               {/* Compact variant for tablet (sm to md) */}
               <div className="hidden sm:block md:hidden">
                 <div className="space-y-4">
-                  {data?.items?.map((car, index) => (
+                  {filteredItems.map((car) => (
                     <CarListingCard
-                      key={`compact-${index}`}
+                      key={car.id}
                       {...car}
                       userProfile={undefined}
                       variant="compact"
@@ -382,6 +414,19 @@ export default function Page() {
                 </div>
               </div>
             </div>
+
+            {(data?.items?.length ?? 0) > 0 && filteredItems.length === 0 && (
+              <div className="py-16 text-center text-textdark/70">
+                No vehicles match your filters.{" "}
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="text-primary underline"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            )}
 
             {/* Load More Button */}
             <div className="text-center mb-8">
