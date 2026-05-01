@@ -27,6 +27,7 @@ const CarListingCard = ({
   price,
   kmsDriven,
   description,
+  images,
   variant = "default",
   onClose,
   showCloseButton = false,
@@ -34,6 +35,7 @@ const CarListingCard = ({
 }: CarListingCardProps) => {
   const router = useRouter();
   const isVerifiedSeller = true; // You can add logic to determine if seller is verified
+  const listingImage = images?.[0] || carImg.src;
 
     // Compact variant
   if (variant === "compact") {
@@ -53,7 +55,7 @@ const CarListingCard = ({
           {/* Car Image */}
           <div className="relative aspect-[3/2] w-full sm:w-80 sm:aspect-[4/3] flex-shrink-0">
             <Image
-              src={carImg.src}
+              src={listingImage}
               alt={vehicleName}
               fill
               className="object-fill rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none"
@@ -123,7 +125,7 @@ const CarListingCard = ({
       {/* Car Image with Verified Seller Badge */}
       <div className="relative w-full aspect-[8/5]">
         <Image
-          src={carImg.src}
+          src={listingImage}
           alt={vehicleName}
           fill
           className="object-fill"

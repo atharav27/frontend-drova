@@ -51,18 +51,20 @@ export const CarListingCardPost = ({
   vehicleName,
   price,
   status,
+  images,
   refetchPosts,
   updatePostStatus,
   setActiveTab
 }: CarListingCardProps) => {
   const router = useRouter();
+  const listingImage = images?.[0] || carImg.src;
 
   return (
     <Card className="w-full overflow-hidden border shadow-sm rounded-lg p-0">
       <div className="flex flex-col md:flex-row">
         {/* Left side - Image */}
         <div className="relative aspect-[3/2] w-full md:w-1/2 lg:w-1/2 xl:w-1/3 flex-shrink-0">
-          <Image src={carImg.src} alt={vehicleName} fill className="object-fill rounded-t-lg md:rounded-l-lg md:rounded-tr-none" />
+          <Image src={listingImage} alt={vehicleName} fill className="object-fill rounded-t-lg md:rounded-l-lg md:rounded-tr-none" />
           {/* Verified Seller Badge */}
           <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-[#6AD072] text-white text-xs px-2 py-1 sm:px-3 sm:py-1 rounded-full">
             Verified Seller
